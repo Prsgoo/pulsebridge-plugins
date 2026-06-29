@@ -1,0 +1,9 @@
+{
+  "generators": {
+    "plugin": {
+      "factory": "./plugin/index",
+      "schema": "./plugin/schema.json",
+      "description": "Scaffold a new PulseBridge integration or processor plugin"
+    }
+  }
+}

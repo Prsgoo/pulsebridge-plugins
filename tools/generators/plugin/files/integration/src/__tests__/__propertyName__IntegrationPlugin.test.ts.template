@@ -1,0 +1,104 @@
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { PluginAuthError, RateLimitError, TransientError } from "pulsebridge";
+import {
+  <%= className %>,
+  RECORD_TYPE_<%= constantName %>,
+} from "../<%= propertyName %>IntegrationPlugin.js";
+
+const mockLogger = {
+  debug: vi.fn(),
+  info: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
+};
+
+const AUTH_FIXTURE = "fixture-auth-value";
+const WRONG_FIXTURE = "wrong-fixture-value";
+const AUTH_FIELD = "<%= constantName %>_API_KEY";
+
+function makeContext(creds: Record<string, string> = {}) {
+  return {
+    logger: mockLogger,
+    now: () => new Date("2024-01-15T12:00:00Z"),
+    secrets: {
+      get: (k: string) => creds[k],
+      has: (k: string) => k in creds,
+    },
+  };
+}
+
+function makeOkResponse(body: unknown, headers: Record<string, string> = {}) {
+  return {
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve(body),
+    headers: { get: (h: string) => headers[h] ?? null },
+  } as unknown as Response;
+}
+
+function makeErrorResponse(status: number, headers: Record<string, string> = {}) {
+  return {
+    ok: false,
+    status,
+    json: () => Promise.resolve({}),
+    headers: { get: (h: string) => headers[h] ?? null },
+  } as unknown as Response;
+}
+
+describe("<%= className %>", () => {
+  let plugin: <%= className %>;
+
+  beforeEach(() => {
+    plugin = new <%= className %>();
+    plugin.configure({ exampleParam: "test-value" });
+    vi.clearAllMocks();
+  });
+
+  it("should return records on successful response", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValueOnce(
+      makeOkResponse({ result: "ok" }),
+    );
+
+    const ctx = makeContext({ [AUTH_FIELD]: AUTH_FIXTURE });
+    const records = await plugin.execute("fetch", ctx as never);
+
+    expect(records).toHaveLength(1);
+    expect(records[0]?.type).toBe(RECORD_TYPE_<%= constantName %>);
+  });
+
+  it("should throw PluginAuthError on 401", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValueOnce(makeErrorResponse(401));
+
+    const ctx = makeContext({ [AUTH_FIELD]: WRONG_FIXTURE });
+    await expect(plugin.execute("fetch", ctx as never)).rejects.toBeInstanceOf(
+      PluginAuthError,
+    );
+  });
+
+  it("should throw RateLimitError on 429", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValueOnce(
+      makeErrorResponse(429, { "Retry-After": "60" }),
+    );
+
+    const ctx = makeContext({ [AUTH_FIELD]: AUTH_FIXTURE });
+    await expect(plugin.execute("fetch", ctx as never)).rejects.toBeInstanceOf(
+      RateLimitError,
+    );
+  });
+
+  it("should throw TransientError on 500", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValueOnce(makeErrorResponse(500));
+
+    const ctx = makeContext({ [AUTH_FIELD]: AUTH_FIXTURE });
+    await expect(plugin.execute("fetch", ctx as never)).rejects.toBeInstanceOf(
+      TransientError,
+    );
+  });
+
+  it("should throw on unsupported operationId", async () => {
+    const ctx = makeContext({ [AUTH_FIELD]: AUTH_FIXTURE });
+    await expect(plugin.execute("unknown-op", ctx as never)).rejects.toThrow(
+      "not supported",
+    );
+  });
+});

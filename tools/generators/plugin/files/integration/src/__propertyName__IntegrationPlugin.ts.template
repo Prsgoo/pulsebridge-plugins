@@ -1,0 +1,126 @@
+import {
+  PluginAuthError,
+  PluginKinds,
+  RateLimitError,
+  TransientError,
+  type IntegrationPlugin,
+  type IntegrationPluginManifest,
+  type PulseRecord,
+  type RuntimeContext,
+} from "pulsebridge";
+import { z } from "zod";
+
+export const PLUGIN_ID = "<%= pluginId %>";
+export const RECORD_TYPE_<%= constantName %> = "<%= fileName %>.data";
+
+const BASE_URL = "https://api.example.com";
+
+export const <%= propertyName %>ConfigSchema = z.object({
+  // TODO: define your config fields
+  exampleParam: z.string().min(1),
+});
+
+export type <%= pluginClassName %>Config = z.infer<typeof <%= propertyName %>ConfigSchema>;
+
+export interface <%= pluginClassName %>Data {
+  // TODO: define your record data shape
+  raw: unknown;
+}
+
+export class <%= className %> implements IntegrationPlugin<<%= pluginClassName %>Config> {
+  readonly manifest: IntegrationPluginManifest = {
+    id: PLUGIN_ID,
+    name: "<%= pluginClassName %> Integration",
+    version: "0.1.0",
+    kind: PluginKinds.INTEGRATION,
+    operations: [
+      {
+        id: "fetch",
+        name: "Fetch",
+        recordType: RECORD_TYPE_<%= constantName %>,
+      },
+    ],
+    auth: {
+      type: "apiKey",
+      secrets: [
+        {
+          key: "<%= constantName %>_API_KEY",
+          description: "<%= pluginClassName %> API key",
+          required: true,
+        },
+      ],
+    },
+    polling: {
+      defaultIntervalMs: 5 * 60_000,
+      minIntervalMs: 60_000,
+      hard: false,
+    },
+    rateLimit: {
+      requestsPerMinute: 60,
+      maxConcurrentRequests: 1,
+    },
+  };
+
+  readonly configSchema = <%= propertyName %>ConfigSchema;
+
+  private config: <%= pluginClassName %>Config = { exampleParam: "" };
+
+  configure(config: <%= pluginClassName %>Config): void {
+    this.config = config;
+  }
+
+  async execute(
+    operationId: string,
+    context: RuntimeContext,
+  ): Promise<ReadonlyArray<PulseRecord<<%= pluginClassName %>Data>>> {
+    if (operationId !== "fetch") {
+      throw new Error(
+        `Operation '${operationId}' is not supported by '${PLUGIN_ID}'.`,
+      );
+    }
+
+    const apiKey = context.secrets.get("<%= constantName %>_API_KEY");
+    if (!apiKey) {
+      throw new PluginAuthError(
+        "<%= constantName %>_API_KEY secret is required but not set.",
+      );
+    }
+    context.logger.debug("Fetching data.", { exampleParam: this.config.exampleParam });
+
+    const url = new URL(BASE_URL);
+    url.searchParams.set("apiKey", apiKey);
+
+    // Forward context.signal so a timed-out execution releases its socket.
+    const response = await fetch(url.toString(), {
+      signal: context.signal ?? null,
+    });
+
+    if (response.status === 401) {
+      throw new PluginAuthError("Invalid API key.");
+    }
+    if (response.status === 429) {
+      const retryAfter = response.headers.get("Retry-After");
+      throw new RateLimitError(
+        "Rate limit reached.",
+        retryAfter !== null ? parseInt(retryAfter, 10) * 1000 : undefined,
+      );
+    }
+    if (!response.ok) {
+      throw new TransientError(
+        `<%= pluginClassName %> API returned HTTP ${response.status}.`,
+      );
+    }
+
+    const data = (await response.json()) as unknown;
+
+    return [
+      {
+        type: RECORD_TYPE_<%= constantName %>,
+        timestamp: context.now().toISOString(),
+        source: PLUGIN_ID,
+        entityKey: "default",
+        data: { raw: data } satisfies <%= pluginClassName %>Data,
+      },
+    ];
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "<%= packageName %>",
+  "version": "0.1.0-alpha.1",
+  "description": "<%= description %>",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rimraf dist",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "publish:local": "npm publish --registry http://localhost:4873",
+    "publish:local:alpha": "npm publish --registry http://localhost:4873 --tag alpha",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "pulsebridge": "*"
+  }
+}

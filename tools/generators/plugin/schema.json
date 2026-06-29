@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "title": "Plugin",
+  "description": "Scaffold a new PulseBridge integration or processor plugin",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Plugin name in kebab-case (e.g. open-weather, crypto-ticker)",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What is the plugin name? (kebab-case, e.g. open-weather)"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["integration", "processor"],
+      "description": "Plugin type",
+      "x-prompt": {
+        "message": "Which plugin type?",
+        "type": "list",
+        "items": [
+          { "value": "integration", "label": "Integration — fetches data from an external API" },
+          { "value": "processor", "label": "Processor — transforms and combines records into views" }
+        ]
+      }
+    },
+    "description": {
+      "type": "string",
+      "description": "Short description for package.json",
+      "x-prompt": "Package description?"
+    }
+  },
+  "required": ["name", "type", "description"]
+}

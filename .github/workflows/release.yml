@@ -1,0 +1,58 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  release-please:
+    name: Release Please
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      releases_created: ${{ steps.release.outputs.releases_created }}
+      paths_released: ${{ steps.release.outputs.paths_released }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  publish:
+    name: Publish to npm
+    needs: release-please
+    if: ${{ needs.release-please.outputs.releases_created == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # OIDC trusted publishing + provenance
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      # Trusted Publishing (OIDC) requires npm >= 11.5.1; Node 22 ships an older npm.
+      - name: Upgrade npm for trusted publishing
+        run: npm install -g npm@latest
+
+      - run: npm ci
+      - run: npm run build
+
+      # Publish only the packages release-please cut this run. Auth is via the
+      # per-package OIDC trusted publisher configured on npm; provenance is
+      # automatic. publishConfig.access=public is set in each package.json.
+      - name: Publish released packages
+        run: |
+          echo '${{ needs.release-please.outputs.paths_released }}' \
+            | jq -r '.[]' \
+            | while read -r pkg_path; do
+                echo "Publishing $pkg_path"
+                npm publish -w "$pkg_path"
+              done

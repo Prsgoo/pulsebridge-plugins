@@ -1,0 +1,62 @@
+import {
+  PluginKinds,
+  type ProcessorPlugin,
+  type ProcessorPluginManifest,
+  type PulseRecord,
+  type PulseViewRecord,
+  type RuntimeContext,
+} from "pulsebridge";
+
+export const PLUGIN_ID = "<%= pluginId %>";
+
+// Record types this processor consumes — update to match your integration plugins.
+export const RECORD_TYPE_INPUT = "example.data";
+
+// View IDs this processor produces and (optionally) depends on.
+export const VIEW_<%= constantName %> = "<%= fileName %>";
+
+export interface <%= pluginClassName %>Item {
+  // TODO: define the shape of each item in the view
+  id: string;
+}
+
+export interface <%= pluginClassName %>Data {
+  items: <%= pluginClassName %>Item[];
+}
+
+export class <%= className %> implements ProcessorPlugin {
+  readonly manifest: ProcessorPluginManifest = {
+    id: PLUGIN_ID,
+    name: "<%= pluginClassName %> Processor",
+    version: "0.1.0",
+    kind: PluginKinds.PROCESSOR,
+    consumes: [RECORD_TYPE_INPUT],
+    produces: [VIEW_<%= constantName %>],
+  };
+
+  async process(
+    records: ReadonlyArray<PulseRecord>,
+    context: RuntimeContext,
+    _views?: ReadonlyArray<PulseViewRecord>,
+  ): Promise<PulseViewRecord<<%= pluginClassName %>Data> | null> {
+    const relevant = records.filter((r) => r.type === RECORD_TYPE_INPUT);
+
+    if (relevant.length === 0) {
+      context.logger.debug("No relevant records — skipping.");
+      return null;
+    }
+
+    // TODO: transform records into view items
+    const items: <%= pluginClassName %>Item[] = relevant.map((r) => ({
+      id: r.entityKey,
+    }));
+
+    context.logger.debug("Built view.", { count: items.length });
+
+    return {
+      view: VIEW_<%= constantName %>,
+      generatedAt: context.now().toISOString(),
+      items: [{ items }],
+    };
+  }
+}

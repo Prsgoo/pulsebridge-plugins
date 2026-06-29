@@ -1,0 +1,39 @@
+{
+  "name": "@prsgoo/integration-nasa-apod",
+  "version": "0.1.0",
+  "description": "PulseBridge integration plugin for the NASA Astronomy Picture of the Day API.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "pulsebridge",
+    "pulsebridge-plugin"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rimraf dist",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "publish:npm": "npm publish",
+    "publish:local": "npm publish --registry http://localhost:4873",
+    "publish:local:alpha": "npm publish --registry http://localhost:4873 --tag alpha",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "pulsebridge": "^0.1.0",
+    "zod": "^4.3.6"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
