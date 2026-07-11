@@ -99,4 +99,39 @@ describe("WeatherFeedProcessorPlugin", () => {
     const view = await plugin.process([], makeContext());
     expect(view).toBeNull();
   });
+
+  it("should fall back to city when entityKey is absent", async () => {
+    const record: PulseRecord = {
+      type: "weather.current",
+      timestamp: "2024-01-15T11:00:00Z",
+      source: "@pulsebridge/integration-openweather",
+      data: {
+        city: "Paris",
+        country: "FR",
+        temp: 20,
+        feelsLike: 19,
+        humidity: 60,
+        windSpeed: 3,
+        description: "clear",
+        icon: "01d",
+      },
+    };
+    const view = await plugin.process([record], makeContext());
+    expect(view?.items).toHaveLength(1);
+    expect(view?.items[0]?.city).toBe("Paris");
+  });
+
+  it("should keep the newer record when an older one arrives after it", async () => {
+    const newer = {
+      ...makeWeatherRecord("London", 15),
+      timestamp: "2024-01-15T11:00:00Z",
+    };
+    const older = {
+      ...makeWeatherRecord("London", 10),
+      timestamp: "2024-01-15T10:00:00Z",
+    };
+    const view = await plugin.process([newer, older], makeContext());
+    expect(view?.items).toHaveLength(1);
+    expect(view?.items[0]?.temp).toBe(15);
+  });
 });

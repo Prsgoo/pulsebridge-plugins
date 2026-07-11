@@ -104,4 +104,42 @@ describe("SeismicFeedProcessorPlugin", () => {
     const view = await plugin.process([], makeContext());
     expect(view).toBeNull();
   });
+
+  it("should fall back to a coordinate key when entityKey is absent", async () => {
+    const record: PulseRecord = {
+      type: "seismic.event",
+      timestamp: "2024-01-15T11:00:00Z",
+      source: "@pulsebridge/integration-usgs-earthquakes",
+      data: {
+        magnitude: 4.0,
+        magnitudeType: "mw",
+        place: "Ocean",
+        depth: 5,
+        latitude: 10,
+        longitude: 20,
+        significance: 100,
+        tsunami: false,
+        alert: null,
+        url: "https://earthquake.usgs.gov/event",
+        eventTime: "2024-01-15T10:00:00Z",
+      },
+    };
+    const view = await plugin.process([record], makeContext());
+    expect(view?.items).toHaveLength(1);
+    expect(view?.items[0]?.place).toBe("Ocean");
+  });
+
+  it("should keep the newer record when an older one arrives after it", async () => {
+    const newer = {
+      ...makeSeismicRecord("us-a", 5.5),
+      timestamp: "2024-01-15T11:00:00Z",
+    };
+    const older = {
+      ...makeSeismicRecord("us-a", 3.0),
+      timestamp: "2024-01-15T10:00:00Z",
+    };
+    const view = await plugin.process([newer, older], makeContext());
+    expect(view?.items).toHaveLength(1);
+    expect(view?.items[0]?.magnitude).toBe(5.5);
+  });
 });
