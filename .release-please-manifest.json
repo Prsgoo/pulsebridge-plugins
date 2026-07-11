@@ -10,6 +10,7 @@
   "packages/integration-openaq-air": "0.1.0",
   "packages/integration-openweather": "0.1.0",
   "packages/integration-usgs-earthquakes": "0.1.0",
+  "packages/integration-open-elevation": "0.0.0",
   "packages/processor-crypto-ticker": "0.0.0",
   "packages/processor-daily-digest": "0.0.0",
   "packages/processor-seismic-feed": "0.0.0",
