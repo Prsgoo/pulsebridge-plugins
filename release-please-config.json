@@ -44,6 +44,10 @@
       "release-type": "node",
       "component": "integration-usgs-earthquakes"
     },
+    "packages/integration-open-elevation": {
+      "release-type": "node",
+      "component": "integration-open-elevation"
+    },
     "packages/processor-crypto-ticker": {
       "release-type": "node",
       "component": "processor-crypto-ticker"
