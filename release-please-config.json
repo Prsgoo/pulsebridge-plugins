@@ -46,28 +46,23 @@
     },
     "packages/integration-open-elevation": {
       "release-type": "node",
-      "component": "integration-open-elevation",
-      "release-as": "0.1.0"
+      "component": "integration-open-elevation"
     },
     "packages/processor-crypto-ticker": {
       "release-type": "node",
-      "component": "processor-crypto-ticker",
-      "release-as": "0.1.0"
+      "component": "processor-crypto-ticker"
     },
     "packages/processor-daily-digest": {
       "release-type": "node",
-      "component": "processor-daily-digest",
-      "release-as": "0.1.0"
+      "component": "processor-daily-digest"
     },
     "packages/processor-seismic-feed": {
       "release-type": "node",
-      "component": "processor-seismic-feed",
-      "release-as": "0.1.0"
+      "component": "processor-seismic-feed"
     },
     "packages/processor-weather-feed": {
       "release-type": "node",
-      "component": "processor-weather-feed",
-      "release-as": "0.1.0"
+      "component": "processor-weather-feed"
     }
   }
 }

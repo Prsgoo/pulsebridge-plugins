@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "description": "PulseBridge integration plugin for Finnhub stock market quotes.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Prsgoo/pulsebridge-plugins.git",
+    "directory": "packages/integration-finnhub-markets"
+  },
   "type": "module",
   "exports": {
     ".": {

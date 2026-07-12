@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "description": "PulseBridge processor plugin that turns weather.current records into a location feed view.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Prsgoo/pulsebridge-plugins.git",
+    "directory": "packages/processor-weather-feed"
+  },
   "type": "module",
   "exports": {
     ".": {

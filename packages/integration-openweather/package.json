@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "description": "PulseBridge integration plugin for the OpenWeatherMap current-weather API.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Prsgoo/pulsebridge-plugins.git",
+    "directory": "packages/integration-openweather"
+  },
   "type": "module",
   "exports": {
     ".": {

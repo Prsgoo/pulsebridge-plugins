@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "description": "PulseBridge processor plugin that combines weather and APOD data into a daily digest view.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Prsgoo/pulsebridge-plugins.git",
+    "directory": "packages/processor-daily-digest"
+  },
   "type": "module",
   "exports": {
     ".": {

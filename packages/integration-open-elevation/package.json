@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "description": "PulseBridge integration plugin for Open-Elevation — look up terrain elevation for a batch of coordinates via an on-demand action.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Prsgoo/pulsebridge-plugins.git",
+    "directory": "packages/integration-open-elevation"
+  },
   "type": "module",
   "exports": {
     ".": {
