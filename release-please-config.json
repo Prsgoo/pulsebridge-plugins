@@ -43,6 +43,26 @@
     "packages/integration-usgs-earthquakes": {
       "release-type": "node",
       "component": "integration-usgs-earthquakes"
+    },
+    "packages/integration-open-elevation": {
+      "release-type": "node",
+      "component": "integration-open-elevation"
+    },
+    "packages/processor-crypto-ticker": {
+      "release-type": "node",
+      "component": "processor-crypto-ticker"
+    },
+    "packages/processor-daily-digest": {
+      "release-type": "node",
+      "component": "processor-daily-digest"
+    },
+    "packages/processor-seismic-feed": {
+      "release-type": "node",
+      "component": "processor-seismic-feed"
+    },
+    "packages/processor-weather-feed": {
+      "release-type": "node",
+      "component": "processor-weather-feed"
     }
   }
 }
