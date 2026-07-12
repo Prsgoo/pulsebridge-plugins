@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "description": "PulseBridge integration plugin for OpenAQ v3 air quality measurements.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Prsgoo/pulsebridge-plugins.git",
+    "directory": "packages/integration-openaq-air"
+  },
   "type": "module",
   "exports": {
     ".": {

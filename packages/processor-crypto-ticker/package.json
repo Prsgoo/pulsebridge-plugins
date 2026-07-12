@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "description": "PulseBridge processor that turns crypto.price records into a live ticker view with price movement.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Prsgoo/pulsebridge-plugins.git",
+    "directory": "packages/processor-crypto-ticker"
+  },
   "type": "module",
   "exports": {
     ".": {

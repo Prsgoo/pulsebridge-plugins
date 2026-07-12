@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "description": "PulseBridge processor that aggregates seismic.event records into a map-ready seismic feed view.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Prsgoo/pulsebridge-plugins.git",
+    "directory": "packages/processor-seismic-feed"
+  },
   "type": "module",
   "exports": {
     ".": {

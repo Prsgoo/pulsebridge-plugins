@@ -3,6 +3,11 @@
   "version": "0.1.0",
   "description": "PulseBridge integration plugin for NVD CVE vulnerability data.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Prsgoo/pulsebridge-plugins.git",
+    "directory": "packages/integration-nvd-cve"
+  },
   "type": "module",
   "exports": {
     ".": {
