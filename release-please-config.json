@@ -44,6 +44,10 @@
       "release-type": "node",
       "component": "integration-usgs-earthquakes"
     },
+    "packages/integration-ntfy": {
+      "release-type": "node",
+      "component": "integration-ntfy"
+    },
     "packages/integration-open-elevation": {
       "release-type": "node",
       "component": "integration-open-elevation"
