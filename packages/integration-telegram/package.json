@@ -1,6 +1,6 @@
 {
   "name": "@prsgoo/integration-telegram",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-beta.1",
   "description": "PulseBridge integration plugin for sending notifications via Telegram.",
   "license": "MIT",
   "repository": {
