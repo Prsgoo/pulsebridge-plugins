@@ -2,36 +2,19 @@ name: Release
 
 on:
   push:
-    branches: [main]
+    tags:
+      - "*-v*"
 
 jobs:
-  release-please:
-    name: Release Please
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-    outputs:
-      releases_created: ${{ steps.release.outputs.releases_created }}
-      paths_released: ${{ steps.release.outputs.paths_released }}
-    steps:
-      - uses: googleapis/release-please-action@v4
-        id: release
-        with:
-          config-file: release-please-config.json
-          manifest-file: .release-please-manifest.json
-          token: ${{ secrets.GITHUB_TOKEN }}
-
   publish:
     name: Publish to npm
-    needs: release-please
-    if: ${{ needs.release-please.outputs.releases_created == 'true' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write # OIDC trusted publishing + provenance
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -42,17 +25,23 @@ jobs:
       - name: Upgrade npm for trusted publishing
         run: npm install -g npm@latest
 
-      - run: npm ci
-      - run: npm run build
+      - name: Install dependencies
+        run: npm ci
 
-      # Publish only the packages release-please cut this run. Auth is via the
-      # per-package OIDC trusted publisher configured on npm; provenance is
-      # automatic. publishConfig.access=public is set in each package.json.
-      - name: Publish released packages
+      - name: Build
+        run: npm run build
+
+      - name: Publish package
         run: |
-          echo '${{ needs.release-please.outputs.paths_released }}' \
-            | jq -r '.[]' \
-            | while read -r pkg_path; do
-                echo "Publishing $pkg_path"
-                npm publish -w "$pkg_path"
-              done
+          TAG="${{ github.ref_name }}"
+          PKG_NAME="${TAG%-v*}"
+          PKG_PATH="packages/$PKG_NAME"
+          VERSION=$(node -p "require('./$PKG_PATH/package.json').version")
+
+          if [[ "$VERSION" == *-* ]]; then
+            echo "Publishing $PKG_PATH@$VERSION as @beta"
+            npm publish -w "$PKG_PATH" --tag beta
+          else
+            echo "Publishing $PKG_PATH@$VERSION as @latest"
+            npm publish -w "$PKG_PATH"
+          fi
