@@ -1,12 +1,12 @@
 {
-  "name": "@prsgoo/integration-ntfy",
-  "version": "0.1.1-beta.1",
-  "description": "PulseBridge integration plugin for sending notifications via ntfy.",
+  "name": "@prsgoo/integration-telegram",
+  "version": "0.1.0-alpha.1",
+  "description": "PulseBridge integration plugin for sending notifications via Telegram.",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Prsgoo/pulsebridge-plugins.git",
-    "directory": "packages/integration-ntfy"
+    "directory": "packages/integration-telegram"
   },
   "type": "module",
   "exports": {
