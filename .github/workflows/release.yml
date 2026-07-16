@@ -2,11 +2,12 @@ name: Release
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
 
 jobs:
-  release-please:
-    name: Release Please
+  release-please-stable:
+    name: Release Please (stable)
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -22,10 +23,35 @@ jobs:
           manifest-file: .release-please-manifest.json
           token: ${{ secrets.GITHUB_TOKEN }}
 
+  release-please-beta:
+    name: Release Please (beta)
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      releases_created: ${{ steps.release.outputs.releases_created }}
+      paths_released: ${{ steps.release.outputs.paths_released }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest-beta.json
+          target-branch: develop
+          prerelease: true
+          prerelease-type: beta
+          token: ${{ secrets.GITHUB_TOKEN }}
+
   publish:
     name: Publish to npm
-    needs: release-please
-    if: ${{ needs.release-please.outputs.releases_created == 'true' }}
+    needs: [release-please-stable, release-please-beta]
+    if: |
+      always() && (
+        needs.release-please-stable.outputs.releases_created == 'true' ||
+        needs.release-please-beta.outputs.releases_created == 'true'
+      )
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -49,10 +75,18 @@ jobs:
       # per-package OIDC trusted publisher configured on npm; provenance is
       # automatic. publishConfig.access=public is set in each package.json.
       - name: Publish released packages
+        env:
+          PATHS_RELEASED: ${{ needs.release-please-stable.outputs.paths_released || needs.release-please-beta.outputs.paths_released }}
         run: |
-          echo '${{ needs.release-please.outputs.paths_released }}' \
+          echo "$PATHS_RELEASED" \
             | jq -r '.[]' \
             | while read -r pkg_path; do
-                echo "Publishing $pkg_path"
-                npm publish -w "$pkg_path"
+                VERSION=$(node -p "require('./$pkg_path/package.json').version")
+                if [[ "$VERSION" == *-* ]]; then
+                  echo "Publishing $pkg_path as @beta"
+                  npm publish -w "$pkg_path" --tag beta
+                else
+                  echo "Publishing $pkg_path as @latest"
+                  npm publish -w "$pkg_path"
+                fi
               done
