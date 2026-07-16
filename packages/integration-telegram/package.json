@@ -1,6 +1,6 @@
 {
   "name": "@prsgoo/integration-telegram",
-  "version": "0.1.0-beta.1",
+  "version": "0.1.0-alpha.1",
   "description": "PulseBridge integration plugin for sending notifications via Telegram.",
   "license": "MIT",
   "repository": {
@@ -29,7 +29,9 @@
     "clean": "rimraf dist",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "publish:npm": "npm publish",
+    "publish:npm:alpha": "npm publish --tag alpha",
     "publish:local": "npm publish --registry http://localhost:4873",
+    "publish:local:alpha": "npm publish --registry http://localhost:4873 --tag alpha",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"
   },
