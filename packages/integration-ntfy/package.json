@@ -1,6 +1,6 @@
 {
   "name": "@prsgoo/integration-ntfy",
-  "version": "0.1.1-beta.1",
+  "version": "0.1.1",
   "description": "PulseBridge integration plugin for sending notifications via ntfy.",
   "license": "MIT",
   "repository": {
