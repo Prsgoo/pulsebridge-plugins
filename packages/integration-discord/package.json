@@ -1,12 +1,12 @@
 {
-  "name": "@prsgoo/integration-telegram",
+  "name": "@prsgoo/integration-discord",
   "version": "0.1.0",
-  "description": "PulseBridge integration plugin for sending notifications via Telegram.",
+  "description": "PulseBridge integration plugin for sending notifications via Discord webhooks.",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Prsgoo/pulsebridge-plugins.git",
-    "directory": "packages/integration-telegram"
+    "directory": "packages/integration-discord"
   },
   "type": "module",
   "exports": {
