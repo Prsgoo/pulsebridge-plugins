@@ -13,17 +13,12 @@ export const AIRPLANES_LIVE_INTEGRATION_ID =
   "@prsgoo/integration-airplaneslive";
 export const RECORD_TYPE_FLIGHT_POSITION = "flight.position";
 
-const BASE_URL = "https://api.airplanes.live/v2/aircraft";
+const BASE_URL = "https://api.airplanes.live/v2/point";
 
 export const airplanesLiveConfigSchema = z.object({
-  boundingBox: z
-    .object({
-      minLat: z.number().min(-90).max(90),
-      maxLat: z.number().min(-90).max(90),
-      minLon: z.number().min(-180).max(180),
-      maxLon: z.number().min(-180).max(180),
-    })
-    .optional(),
+  lat: z.number().min(-90).max(90).optional(),
+  lon: z.number().min(-180).max(180).optional(),
+  radius: z.number().positive().optional(),
 });
 
 export type AirplanesLiveConfig = z.infer<typeof airplanesLiveConfigSchema>;
@@ -62,7 +57,7 @@ export class AirplanesLiveIntegrationPlugin implements IntegrationPlugin<Airplan
   readonly manifest: IntegrationPluginManifest = {
     id: AIRPLANES_LIVE_INTEGRATION_ID,
     name: "Airplanes.live",
-    version: "0.1.0-beta.1",
+    version: "0.1.0-beta.2",
     kind: PluginKinds.INTEGRATION,
     operations: [
       {
@@ -160,16 +155,12 @@ export class AirplanesLiveIntegrationPlugin implements IntegrationPlugin<Airplan
   }
 
   private buildUrl(): string {
-    const bb = this.config.boundingBox;
-    if (!bb) return BASE_URL;
-
-    const params = new URLSearchParams({
-      lat_min: String(bb.minLat),
-      lat_max: String(bb.maxLat),
-      lon_min: String(bb.minLon),
-      lon_max: String(bb.maxLon),
-    });
-
-    return `${BASE_URL}?${params.toString()}`;
+    const { lat, lon, radius } = this.config;
+    if (lat === undefined || lon === undefined || radius === undefined) {
+      throw new Error(
+        "Airplanes.live requires lat, lon, and radius to be configured.",
+      );
+    }
+    return `${BASE_URL}/${lat}/${lon}/${radius}`;
   }
 }
