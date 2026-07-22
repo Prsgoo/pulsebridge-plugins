@@ -29,8 +29,6 @@
     "clean": "rimraf dist",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "publish:npm": "npm publish",
-    "publish:local": "npm publish --registry http://localhost:4873",
-    "publish:local:alpha": "npm publish --registry http://localhost:4873 --tag alpha",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"
   },
