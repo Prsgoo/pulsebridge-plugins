@@ -55,7 +55,7 @@ export class AdsbFiIntegrationPlugin implements IntegrationPlugin<AdsbFiConfig> 
   readonly manifest: IntegrationPluginManifest = {
     id: ADSBFI_INTEGRATION_ID,
     name: "adsb.fi",
-    version: "0.1.0-beta.2",
+    version: "0.1.0",
     kind: PluginKinds.INTEGRATION,
     operations: [
       {

@@ -1,6 +1,6 @@
 {
   "name": "@prsgoo/integration-airplaneslive",
-  "version": "0.1.0-beta.2",
+  "version": "0.1.0",
   "description": "PulseBridge integration plugin for the airplanes.live community ADS-B flight position API.",
   "license": "MIT",
   "repository": {

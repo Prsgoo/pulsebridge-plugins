@@ -57,7 +57,7 @@ export class AirplanesLiveIntegrationPlugin implements IntegrationPlugin<Airplan
   readonly manifest: IntegrationPluginManifest = {
     id: AIRPLANES_LIVE_INTEGRATION_ID,
     name: "Airplanes.live",
-    version: "0.1.0-beta.2",
+    version: "0.1.0",
     kind: PluginKinds.INTEGRATION,
     operations: [
       {

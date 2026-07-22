@@ -382,7 +382,7 @@ describe("AirplanesLiveIntegrationPlugin", () => {
     expect(plugin.manifest).toEqual({
       id: "@prsgoo/integration-airplaneslive",
       name: "Airplanes.live",
-      version: "0.1.0-beta.2",
+      version: "0.1.0",
       kind: PluginKinds.INTEGRATION,
       operations: [
         {
