@@ -67,7 +67,7 @@ describe("AirplanesLiveIntegrationPlugin", () => {
 
   beforeEach(() => {
     plugin = new AirplanesLiveIntegrationPlugin();
-    plugin.configure({});
+    plugin.configure({ lat: 51.5, lon: -0.12, radius: 500 });
     vi.clearAllMocks();
   });
 
@@ -258,34 +258,25 @@ describe("AirplanesLiveIntegrationPlugin", () => {
     expect(records[0]?.data.heading).toBeNull();
   });
 
-  it("should send bounding box query params when configured", async () => {
+  it("should build URL from lat, lon, radius path params", async () => {
     const fetchSpy = vi
       .spyOn(global, "fetch")
       .mockResolvedValueOnce(makeOkResponse(makeResponse([])));
 
-    plugin.configure({
-      boundingBox: { minLat: 10, maxLat: 50, minLon: -30, maxLon: 40 },
-    });
-
+    plugin.configure({ lat: 40.7, lon: -74.0, radius: 250 });
     await plugin.execute("fetch-flights", makeContext() as never);
 
-    const url = fetchSpy.mock.calls[0]?.[0] as string;
-    expect(url).toContain("lat_min=10");
-    expect(url).toContain("lat_max=50");
-    expect(url).toContain("lon_min=-30");
-    expect(url).toContain("lon_max=40");
+    expect(fetchSpy.mock.calls[0]?.[0]).toBe(
+      "https://api.airplanes.live/v2/point/40.7/-74/250",
+    );
   });
 
-  it("should NOT send bounding box params when not configured", async () => {
-    const fetchSpy = vi
-      .spyOn(global, "fetch")
-      .mockResolvedValueOnce(makeOkResponse(makeResponse([])));
+  it("should throw when lat, lon, or radius are not configured", async () => {
+    plugin.configure({});
 
-    await plugin.execute("fetch-flights", makeContext() as never);
-
-    const url = fetchSpy.mock.calls[0]?.[0] as string;
-    expect(url).toBe("https://api.airplanes.live/v2/aircraft");
-    expect(url).not.toContain("lat_min");
+    await expect(
+      plugin.execute("fetch-flights", makeContext() as never),
+    ).rejects.toThrow("lat, lon, and radius");
   });
 
   it("should pass abort signal to fetch", async () => {
@@ -391,7 +382,7 @@ describe("AirplanesLiveIntegrationPlugin", () => {
     expect(plugin.manifest).toEqual({
       id: "@prsgoo/integration-airplaneslive",
       name: "Airplanes.live",
-      version: "0.1.0-beta.1",
+      version: "0.1.0-beta.2",
       kind: PluginKinds.INTEGRATION,
       operations: [
         {
@@ -409,31 +400,31 @@ describe("AirplanesLiveIntegrationPlugin", () => {
     });
   });
 
-  it("should accept a valid config with a bounding box", () => {
+  it("should accept a valid lat/lon/radius config", () => {
     expect(() =>
-      airplanesLiveConfigSchema.parse({
-        boundingBox: { minLat: 10, maxLat: 50, minLon: -30, maxLon: 40 },
-      }),
+      airplanesLiveConfigSchema.parse({ lat: 51.5, lon: -0.12, radius: 500 }),
     ).not.toThrow();
   });
 
-  it("should accept a config with no bounding box", () => {
+  it("should accept a config with no location", () => {
     expect(() => airplanesLiveConfigSchema.parse({})).not.toThrow();
   });
 
-  it("should reject a bounding box with out-of-range latitude", () => {
+  it("should reject lat out of range", () => {
     expect(() =>
-      airplanesLiveConfigSchema.parse({
-        boundingBox: { minLat: -91, maxLat: 50, minLon: 0, maxLon: 10 },
-      }),
+      airplanesLiveConfigSchema.parse({ lat: -91, lon: 0, radius: 250 }),
     ).toThrow();
   });
 
-  it("should reject a bounding box with out-of-range longitude", () => {
+  it("should reject lon out of range", () => {
     expect(() =>
-      airplanesLiveConfigSchema.parse({
-        boundingBox: { minLat: 0, maxLat: 10, minLon: -181, maxLon: 10 },
-      }),
+      airplanesLiveConfigSchema.parse({ lat: 0, lon: -181, radius: 250 }),
+    ).toThrow();
+  });
+
+  it("should reject non-positive radius", () => {
+    expect(() =>
+      airplanesLiveConfigSchema.parse({ lat: 51.5, lon: -0.12, radius: -10 }),
     ).toThrow();
   });
 });
