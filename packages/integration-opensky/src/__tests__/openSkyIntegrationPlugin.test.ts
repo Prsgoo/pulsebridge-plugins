@@ -414,7 +414,7 @@ describe("OpenSkyIntegrationPlugin", () => {
     expect(plugin.manifest).toEqual({
       id: "@prsgoo/integration-opensky",
       name: "OpenSky Network",
-      version: "0.1.0-alpha.1",
+      version: "0.1.0-beta.1",
       kind: PluginKinds.INTEGRATION,
       operations: [
         {

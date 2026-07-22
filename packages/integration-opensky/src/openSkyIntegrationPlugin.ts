@@ -65,7 +65,7 @@ export class OpenSkyIntegrationPlugin implements IntegrationPlugin<OpenSkyConfig
   readonly manifest: IntegrationPluginManifest = {
     id: OPENSKY_INTEGRATION_ID,
     name: "OpenSky Network",
-    version: "0.1.0-alpha.1",
+    version: "0.1.0-beta.1",
     kind: PluginKinds.INTEGRATION,
     operations: [
       {
