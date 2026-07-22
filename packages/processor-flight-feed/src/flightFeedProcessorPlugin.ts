@@ -44,7 +44,7 @@ export class FlightFeedProcessorPlugin implements ProcessorPlugin {
   readonly manifest: ProcessorPluginManifest = {
     id: FLIGHT_FEED_PROCESSOR_ID,
     name: "Flight Feed",
-    version: "0.1.0-beta.1",
+    version: "0.1.0",
     kind: PluginKinds.PROCESSOR,
     consumes: [RECORD_TYPE_FLIGHT_POSITION],
     produces: [VIEW_FLIGHT_FEED],

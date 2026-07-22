@@ -1,6 +1,6 @@
 {
   "name": "@prsgoo/processor-flight-feed",
-  "version": "0.1.0-beta.1",
+  "version": "0.1.0",
   "description": "PulseBridge processor that aggregates flight.position records into a unified live flight feed view.",
   "license": "MIT",
   "repository": {

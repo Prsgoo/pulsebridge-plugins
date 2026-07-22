@@ -1,6 +1,6 @@
 {
   "name": "@prsgoo/integration-opensky",
-  "version": "0.1.0-beta.1",
+  "version": "0.1.0",
   "description": "PulseBridge integration plugin for the OpenSky Network ADS-B flight position API.",
   "license": "MIT",
   "repository": {
