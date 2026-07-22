@@ -12,17 +12,12 @@ import {
 export const ADSBFI_INTEGRATION_ID = "@prsgoo/integration-adsbfi";
 export const RECORD_TYPE_FLIGHT_POSITION = "flight.position";
 
-const BASE_URL = "https://opendata.adsb.fi/api/v2/aircraft";
+const BASE_URL = "https://opendata.adsb.fi/api/v2";
 
 export const adsbFiConfigSchema = z.object({
-  boundingBox: z
-    .object({
-      minLat: z.number().min(-90).max(90),
-      maxLat: z.number().min(-90).max(90),
-      minLon: z.number().min(-180).max(180),
-      maxLon: z.number().min(-180).max(180),
-    })
-    .optional(),
+  lat: z.number().min(-90).max(90).optional(),
+  lon: z.number().min(-180).max(180).optional(),
+  dist: z.number().positive().optional(),
 });
 
 export type AdsbFiConfig = z.infer<typeof adsbFiConfigSchema>;
@@ -52,16 +47,15 @@ interface AdsbFiAircraft {
 }
 
 interface AdsbFiResponse {
-  ac: AdsbFiAircraft[];
+  aircraft: AdsbFiAircraft[];
   now: number;
-  total: number;
 }
 
 export class AdsbFiIntegrationPlugin implements IntegrationPlugin<AdsbFiConfig> {
   readonly manifest: IntegrationPluginManifest = {
     id: ADSBFI_INTEGRATION_ID,
     name: "adsb.fi",
-    version: "0.1.0-beta.1",
+    version: "0.1.0-beta.2",
     kind: PluginKinds.INTEGRATION,
     operations: [
       {
@@ -113,7 +107,7 @@ export class AdsbFiIntegrationPlugin implements IntegrationPlugin<AdsbFiConfig> 
     const data = (await response.json()) as AdsbFiResponse;
     const nowMs = data.now * 1000;
 
-    return data.ac.flatMap((ac): PulseRecord<FlightPositionData>[] => {
+    return data.aircraft.flatMap((ac): PulseRecord<FlightPositionData>[] => {
       if (ac.lat === undefined || ac.lon === undefined) return [];
 
       const altBaro = ac.alt_baro;
@@ -152,16 +146,10 @@ export class AdsbFiIntegrationPlugin implements IntegrationPlugin<AdsbFiConfig> 
   }
 
   private buildUrl(): string {
-    const bb = this.config.boundingBox;
-    if (!bb) return BASE_URL;
-
-    const params = new URLSearchParams({
-      lat_min: String(bb.minLat),
-      lat_max: String(bb.maxLat),
-      lon_min: String(bb.minLon),
-      lon_max: String(bb.maxLon),
-    });
-
-    return `${BASE_URL}?${params.toString()}`;
+    const { lat, lon, dist } = this.config;
+    if (lat === undefined || lon === undefined || dist === undefined) {
+      throw new Error("adsb.fi requires lat, lon, and dist to be configured.");
+    }
+    return `${BASE_URL}/lat/${lat}/lon/${lon}/dist/${dist}`;
   }
 }

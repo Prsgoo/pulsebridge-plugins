@@ -41,8 +41,8 @@ function makeErrorResponse(status: number) {
   } as unknown as Response;
 }
 
-function makeResponse(ac: unknown[], now = 1717228800) {
-  return makeOkResponse({ ac, now, total: ac.length });
+function makeResponse(aircraft: unknown[], now = 1717228800) {
+  return makeOkResponse({ aircraft, now });
 }
 
 function makeAircraft(overrides: Record<string, unknown> = {}) {
@@ -64,7 +64,7 @@ describe("AdsbFiIntegrationPlugin", () => {
 
   beforeEach(() => {
     plugin = new AdsbFiIntegrationPlugin();
-    plugin.configure({});
+    plugin.configure({ lat: 51.5, lon: -0.12, dist: 500 });
     vi.clearAllMocks();
   });
 
@@ -225,33 +225,25 @@ describe("AdsbFiIntegrationPlugin", () => {
     expect(records[0]?.data.heading).toBe(180);
   });
 
-  it("should send bounding box query params when configured", async () => {
+  it("should build URL from lat, lon, dist path params", async () => {
     const fetchSpy = vi
       .spyOn(global, "fetch")
       .mockResolvedValueOnce(makeResponse([]));
 
-    plugin.configure({
-      boundingBox: { minLat: 30, maxLat: 50, minLon: -130, maxLon: -70 },
-    });
-
-    await plugin.execute("fetch-flights", makeContext() as never);
-
-    const calledUrl = fetchSpy.mock.calls[0]?.[0] as string;
-    expect(calledUrl).toBe(
-      "https://opendata.adsb.fi/api/v2/aircraft?lat_min=30&lat_max=50&lon_min=-130&lon_max=-70",
-    );
-  });
-
-  it("should not send bounding box params when not configured", async () => {
-    const fetchSpy = vi
-      .spyOn(global, "fetch")
-      .mockResolvedValueOnce(makeResponse([]));
-
+    plugin.configure({ lat: 30, lon: -100, dist: 250 });
     await plugin.execute("fetch-flights", makeContext() as never);
 
     expect(fetchSpy.mock.calls[0]?.[0]).toBe(
-      "https://opendata.adsb.fi/api/v2/aircraft",
+      "https://opendata.adsb.fi/api/v2/lat/30/lon/-100/dist/250",
     );
+  });
+
+  it("should throw when lat, lon, or dist are not configured", async () => {
+    plugin.configure({});
+
+    await expect(
+      plugin.execute("fetch-flights", makeContext() as never),
+    ).rejects.toThrow("lat, lon, and dist");
   });
 
   it("should pass abort signal to fetch", async () => {
@@ -306,7 +298,7 @@ describe("AdsbFiIntegrationPlugin", () => {
     ).rejects.toThrow("not supported");
   });
 
-  it("should return empty array when ac is empty", async () => {
+  it("should return empty array when aircraft is empty", async () => {
     vi.spyOn(global, "fetch").mockResolvedValueOnce(makeResponse([]));
 
     const records = await plugin.execute(
@@ -354,7 +346,7 @@ describe("AdsbFiIntegrationPlugin", () => {
     expect(plugin.manifest).toEqual({
       id: "@prsgoo/integration-adsbfi",
       name: "adsb.fi",
-      version: "0.1.0-beta.1",
+      version: "0.1.0-beta.2",
       kind: PluginKinds.INTEGRATION,
       operations: [
         {
@@ -372,31 +364,31 @@ describe("AdsbFiIntegrationPlugin", () => {
     });
   });
 
-  it("should accept config with no bounding box", () => {
+  it("should accept config with no location", () => {
     expect(() => adsbFiConfigSchema.parse({})).not.toThrow();
   });
 
-  it("should accept a valid bounding box config", () => {
+  it("should accept a valid lat/lon/dist config", () => {
     expect(() =>
-      adsbFiConfigSchema.parse({
-        boundingBox: { minLat: 30, maxLat: 50, minLon: -130, maxLon: -70 },
-      }),
+      adsbFiConfigSchema.parse({ lat: 51.5, lon: -0.12, dist: 500 }),
     ).not.toThrow();
   });
 
-  it("should reject lat out of range in bounding box", () => {
+  it("should reject lat out of range", () => {
     expect(() =>
-      adsbFiConfigSchema.parse({
-        boundingBox: { minLat: -91, maxLat: 50, minLon: -130, maxLon: -70 },
-      }),
+      adsbFiConfigSchema.parse({ lat: -91, lon: 0, dist: 250 }),
     ).toThrow();
   });
 
-  it("should reject lon out of range in bounding box", () => {
+  it("should reject lon out of range", () => {
     expect(() =>
-      adsbFiConfigSchema.parse({
-        boundingBox: { minLat: 30, maxLat: 50, minLon: -181, maxLon: -70 },
-      }),
+      adsbFiConfigSchema.parse({ lat: 0, lon: -181, dist: 250 }),
+    ).toThrow();
+  });
+
+  it("should reject non-positive dist", () => {
+    expect(() =>
+      adsbFiConfigSchema.parse({ lat: 51.5, lon: -0.12, dist: -10 }),
     ).toThrow();
   });
 
