@@ -1,6 +1,6 @@
 {
   "name": "@prsgoo/processor-wildfire-feed",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0",
   "description": "PulseBridge processor that aggregates wildfire.event records into a unified wildfire feed view.",
   "license": "MIT",
   "repository": {
