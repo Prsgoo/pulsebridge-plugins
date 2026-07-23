@@ -109,7 +109,7 @@ export class NasaFirmsIntegrationPlugin implements IntegrationPlugin<NasaFirmsCo
   readonly manifest: IntegrationPluginManifest = {
     id: NASA_FIRMS_INTEGRATION_ID,
     name: "NASA FIRMS",
-    version: "0.1.0",
+    version: "0.1.0-beta.1",
     kind: PluginKinds.INTEGRATION,
     operations: [
       {

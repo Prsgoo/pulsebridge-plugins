@@ -272,8 +272,8 @@ describe("NasaFirmsIntegrationPlugin", () => {
     expect(plugin.manifest.id).toBe("@prsgoo/integration-nasa-firms");
   });
 
-  it("should expose version 0.1.0 in the manifest", () => {
-    expect(plugin.manifest.version).toBe("0.1.0");
+  it("should expose version 0.1.0-beta.1 in the manifest", () => {
+    expect(plugin.manifest.version).toBe("0.1.0-beta.1");
   });
 
   it("should expose PluginKinds.INTEGRATION as the manifest kind", () => {
