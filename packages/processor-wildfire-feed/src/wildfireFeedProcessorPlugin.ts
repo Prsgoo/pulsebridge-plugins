@@ -41,7 +41,7 @@ export class WildfireFeedProcessorPlugin implements ProcessorPlugin {
   readonly manifest: ProcessorPluginManifest = {
     id: WILDFIRE_FEED_PROCESSOR_ID,
     name: "Wildfire Feed",
-    version: "0.1.0",
+    version: "0.1.0-beta.1",
     kind: PluginKinds.PROCESSOR,
     consumes: [RECORD_TYPE_WILDFIRE_EVENT],
     produces: [VIEW_WILDFIRE_FEED],
