@@ -52,10 +52,10 @@ function parseCsv(
   csv: string,
   now: string,
 ): ReadonlyArray<PulseRecord<WildfireEventData>> {
-  const lines = csv.trim().split("\n");
-  if (lines.length < 2) return [];
+  const [headerLine, ...dataLines] = csv.trim().split("\n");
+  if (!headerLine || dataLines.length === 0) return [];
 
-  const header = (lines[0] ?? "").split(",").map((h) => h.trim());
+  const header = headerLine.split(",").map((h) => h.trim());
   const idx = (col: string) => header.indexOf(col);
 
   const latIdx = idx("latitude");
@@ -71,8 +71,8 @@ function parseCsv(
 
   const records: PulseRecord<WildfireEventData>[] = [];
 
-  for (let i = 1; i < lines.length; i++) {
-    const cols = (lines[i] ?? "").split(",").map((c) => c.trim());
+  for (const line of dataLines) {
+    const cols = line.split(",").map((c) => c.trim());
     if (cols.length < header.length) continue;
 
     const latitude = parseFloat(cols[latIdx] ?? "");

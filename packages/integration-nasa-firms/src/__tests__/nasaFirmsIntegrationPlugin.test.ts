@@ -309,4 +309,43 @@ describe("NasaFirmsIntegrationPlugin", () => {
     expect(records[0]?.data.brightness).toBe(325.0);
     expect(records[0]?.data.instrument).toBe("MODIS");
   });
+
+  it("should return empty array when CSV has an empty header line", async () => {
+    vi.spyOn(global, "fetch").mockResolvedValueOnce(
+      makeOkResponse(`\n${VIIRS_ROW}`),
+    );
+
+    const records = await plugin.execute("fetch-fires", makeContext() as never);
+
+    expect(records).toHaveLength(0);
+  });
+
+  it("should skip rows when lat/lon columns are not in the header", async () => {
+    const unknownHeader =
+      "foo,bar,baz,qux,quux,quuz,corge,waldo,garply,grault,alt,sth,frp,night";
+    const unknownRow =
+      "34.5,-118.2,330.1,0.39,0.36,2024-07-15,9,N20,VIIRS,nominal,2.0NRT,290.5,12.5,D";
+    vi.spyOn(global, "fetch").mockResolvedValueOnce(
+      makeOkResponse(`${unknownHeader}\n${unknownRow}`),
+    );
+
+    const records = await plugin.execute("fetch-fires", makeContext() as never);
+
+    expect(records).toHaveLength(0);
+  });
+
+  it("should produce a record with fallback values for unrecognized non-coordinate columns", async () => {
+    const partialHeader =
+      "latitude,longitude,dummy1,dummy2,dummy3,dummy4,dummy5,dummy6,dummy7,dummy8,dummy9,dummy10,dummy11,dummy12";
+    const partialRow = "34.5,-118.2,x,x,x,x,x,x,x,x,x,x,x,x";
+    vi.spyOn(global, "fetch").mockResolvedValueOnce(
+      makeOkResponse(`${partialHeader}\n${partialRow}`),
+    );
+
+    const records = await plugin.execute("fetch-fires", makeContext() as never);
+
+    expect(records).toHaveLength(1);
+    expect(records[0]?.data.latitude).toBe(34.5);
+    expect(records[0]?.data.confidence).toBe("");
+  });
 });
