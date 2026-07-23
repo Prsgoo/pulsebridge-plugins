@@ -324,4 +324,64 @@ describe("RssIntegrationPlugin", () => {
       rssConfigSchema.parse({ feeds: [{ url: "not-a-url", name: "Feed" }] }),
     ).toThrow();
   });
+
+  it("should set domain to unknown when item URL is not a valid URL", async () => {
+    const feed = `<?xml version="1.0"?>
+<rss version="2.0"><channel><item>
+  <title>Bad URL</title>
+  <link>not-a-valid-url</link>
+</item></channel></rss>`;
+    vi.spyOn(global, "fetch").mockResolvedValueOnce(makeOkResponse(feed));
+
+    const records = await plugin.execute("fetch-feeds", makeContext() as never);
+
+    expect(records[0]?.data.domain).toBe("unknown");
+  });
+
+  it("should extract title from Atom title element with attributes", async () => {
+    const feed = `<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <entry>
+    <title type="html">Article With Type</title>
+    <link href="https://example.com/typed-title"/>
+    <published>2024-01-15T09:00:00Z</published>
+  </entry>
+</feed>`;
+    vi.spyOn(global, "fetch").mockResolvedValueOnce(makeOkResponse(feed));
+
+    const records = await plugin.execute("fetch-feeds", makeContext() as never);
+
+    expect(records[0]?.data.title).toBe("Article With Type");
+  });
+
+  it("should skip Atom entries where link element has no href attribute", async () => {
+    const feed = `<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <entry>
+    <title>No href</title>
+    <link rel="stylesheet"/>
+    <published>2024-01-15T09:00:00Z</published>
+  </entry>
+</feed>`;
+    vi.spyOn(global, "fetch").mockResolvedValueOnce(makeOkResponse(feed));
+
+    const records = await plugin.execute("fetch-feeds", makeContext() as never);
+
+    expect(records).toHaveLength(0);
+  });
+
+  it("should use empty string title when Atom entry has no title element", async () => {
+    const feed = `<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <entry>
+    <link href="https://example.com/no-title"/>
+    <published>2024-01-15T09:00:00Z</published>
+  </entry>
+</feed>`;
+    vi.spyOn(global, "fetch").mockResolvedValueOnce(makeOkResponse(feed));
+
+    const records = await plugin.execute("fetch-feeds", makeContext() as never);
+
+    expect(records[0]?.data.title).toBe("");
+  });
 });
