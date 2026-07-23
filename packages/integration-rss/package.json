@@ -1,6 +1,6 @@
 {
   "name": "@prsgoo/integration-rss",
-  "version": "0.1.0",
+  "version": "0.1.0-beta.1",
   "description": "PulseBridge integration plugin for polling RSS and Atom feeds as news.event records.",
   "license": "MIT",
   "repository": {

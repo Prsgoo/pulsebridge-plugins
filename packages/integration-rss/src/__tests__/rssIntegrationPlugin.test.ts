@@ -95,7 +95,7 @@ describe("RssIntegrationPlugin", () => {
     expect(plugin.manifest).toMatchObject({
       id: RSS_INTEGRATION_ID,
       name: "RSS",
-      version: "0.1.0",
+      version: "0.1.0-beta.1",
       kind: PluginKinds.INTEGRATION,
       operations: [
         { id: "fetch-feeds", name: "Fetch Feeds", recordType: "news.event" },
@@ -111,7 +111,7 @@ describe("RssIntegrationPlugin", () => {
   });
 
   it("should have manifest version 0.1.0", () => {
-    expect(plugin.manifest.version).toBe("0.1.0");
+    expect(plugin.manifest.version).toBe("0.1.0-beta.1");
   });
 
   it("should have manifest kind INTEGRATION", () => {
