@@ -39,7 +39,7 @@ export class NewsFeedProcessorPlugin implements ProcessorPlugin {
   readonly manifest: ProcessorPluginManifest = {
     id: NEWS_FEED_PROCESSOR_ID,
     name: "News Feed",
-    version: "0.1.0",
+    version: "0.1.0-beta.1",
     kind: PluginKinds.PROCESSOR,
     consumes: [RECORD_TYPE_NEWS_EVENT],
     produces: [VIEW_NEWS_FEED],

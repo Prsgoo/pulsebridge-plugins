@@ -1,6 +1,6 @@
 {
   "name": "@prsgoo/processor-news-feed",
-  "version": "0.1.0",
+  "version": "0.1.0-beta.1",
   "description": "PulseBridge processor that aggregates news.event records into a unified news feed view.",
   "license": "MIT",
   "repository": {
