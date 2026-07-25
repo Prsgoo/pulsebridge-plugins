@@ -1,6 +1,6 @@
 {
   "name": "@prsgoo/integration-nasa-firms",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0",
   "description": "PulseBridge integration plugin for the NASA FIRMS active wildfire detection API.",
   "license": "MIT",
   "repository": {
