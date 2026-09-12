@@ -23,7 +23,6 @@ function makeContext(secrets: Record<string, string> = {}) {
       get: (k: string) => secrets[k],
       has: (k: string) => k in secrets,
     },
-    signal: undefined,
   };
 }
 
@@ -62,7 +61,7 @@ describe("DiscordIntegrationPlugin manifest", () => {
 
   it("should declare DISCORD_WEBHOOK_URL as a required secret", () => {
     const plugin = new DiscordIntegrationPlugin();
-    const secret = plugin.manifest.auth?.secrets.find(
+    const secret = plugin.manifest.auth?.secrets?.find(
       (s) => s.key === "DISCORD_WEBHOOK_URL",
     );
     expect(secret?.required).toBe(true);

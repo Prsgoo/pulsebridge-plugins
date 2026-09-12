@@ -21,7 +21,6 @@ function makeContext(secrets: Record<string, string> = {}) {
       get: (k: string) => secrets[k],
       has: (k: string) => k in secrets,
     },
-    signal: undefined,
   };
 }
 
