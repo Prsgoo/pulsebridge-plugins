@@ -27,11 +27,14 @@
     "lint:fix": "eslint \"packages/**/src/**/*.ts\" --fix",
     "prepare": "husky"
   },
+  "overrides": {
+    "smol-toml": "1.8.0"
+  },
   "devDependencies": {
     "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^20.5.0",
     "@eslint/js": "^10.0.1",
-    "@nx/devkit": "^22.7.1",
+    "@nx/devkit": "^23.2.1",
     "@stryker-mutator/core": "^9.6.1",
     "@stryker-mutator/typescript-checker": "^9.6.1",
     "@stryker-mutator/vitest-runner": "^9.6.1",
@@ -40,7 +43,7 @@
     "eslint": "^10.1.0",
     "eslint-config-prettier": "^10.1.8",
     "husky": "^9.1.7",
-    "nx": "^22.7.1",
+    "nx": "^23.2.1",
     "prettier": "3.8.1",
     "pulsebridge": "^0.2.0",
     "rimraf": "^6.1.3",
