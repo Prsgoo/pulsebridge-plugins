@@ -63,7 +63,7 @@ describe("NtfyIntegrationPlugin manifest", () => {
 
   it("should declare NTFY_TOKEN as an optional secret", () => {
     const plugin = new NtfyIntegrationPlugin();
-    const secret = plugin.manifest.auth?.secrets.find(
+    const secret = plugin.manifest.auth?.secrets?.find(
       (s) => s.key === "NTFY_TOKEN",
     );
     expect(secret?.required).toBe(false);

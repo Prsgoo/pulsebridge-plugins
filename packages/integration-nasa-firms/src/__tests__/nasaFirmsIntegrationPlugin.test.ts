@@ -281,7 +281,7 @@ describe("NasaFirmsIntegrationPlugin", () => {
   });
 
   it("should expose FIRMS_MAP_KEY in auth secrets", () => {
-    expect(plugin.manifest.auth.secrets?.[0]?.key).toBe("FIRMS_MAP_KEY");
+    expect(plugin.manifest.auth?.secrets?.[0]?.key).toBe("FIRMS_MAP_KEY");
   });
 
   it("should expose wildfire.event as the operations recordType", () => {
