@@ -21,7 +21,6 @@ function makeContext(secrets: Record<string, string> = {}) {
       get: (k: string) => secrets[k],
       has: (k: string) => k in secrets,
     },
-    signal: undefined,
   };
 }
 
@@ -61,7 +60,7 @@ describe("TelegramIntegrationPlugin manifest", () => {
 
   it("should declare TELEGRAM_BOT_TOKEN as a required secret", () => {
     const plugin = new TelegramIntegrationPlugin();
-    const secret = plugin.manifest.auth?.secrets.find(
+    const secret = plugin.manifest.auth?.secrets?.find(
       (s) => s.key === "TELEGRAM_BOT_TOKEN",
     );
     expect(secret?.required).toBe(true);
